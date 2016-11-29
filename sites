@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Usage: esv sites [--clone]
+# Summary:
+# Help: Available options
+#
+# --clone:
+#
+
+set -e
+
+# provide sub completions
+if [ "$1" == "--complete" ]; then
+    echo "manage quantify --missing"
+    exit
+fi
+
+cd $ESV_ROOT
+
+if [ "$1" = "manage" ]; then
+    role="site_types/manage"
+    # label="Manage"
+elif [ "$1" = "quantify" ]; then
+    role="site_types/quantify"
+    # label="Quantify"
+fi
+site_configs=($(grep -l -r "role: site_types/manage" ./ansible/playbooks/dev/* 2>/dev/null))
+# sites=$(grep -r "role: $role" ./ansible/playbooks/dev/* 2>/dev/null | cut -d: -f3 | awk '{ print $1 }' | sort -u)
+local_repos=$(ls -d ./*/.hg | cut -f2 -d "/" | sort -u)
+
+# filter to entries unique to $required_repos
+# missing_sites=($(comm -23 <(echo "$sites" ) <(echo "$local_repos")))
+
+# echo "$label sites:"
+
+for i in "${site_configs[@]}"
+do
+    repo_path=$(grep "\- project_repo_path" $i | cut -f2 -d ":" | sed 's/^ *//g')
+    if [ -n "$repo_path" ]; then
+        echo "$repo_path"
+    # else
+    #     echo "unknown: $i"
+    fi
+done

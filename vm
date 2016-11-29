@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Usage: esv vm [django]
+# Summary: Commands for the VM
+# Help: Available options
+#
+# django:
+#
+
+set -e
+
+# provide sub completions
+if [[ "$1" == "--complete" ]]; then
+    if [[ $COMP_CWORD -lt 3 ]]; then
+        echo "django"
+    fi
+    exit
+fi
+
+[ -z ${ESV_ROOT+x} ] && export ESV_ROOT="$HOME/energysavvy"
+
+if [[ "$(hostname)" = "dev" ]]; then
+    echo "Already on the vm"
+else
+    cd $ESV_ROOT
+    if [ "$1" == "django" ]; then
+        ssh -p 2222 django@localhost
+    else
+        vagrant ssh
+    fi
+fi

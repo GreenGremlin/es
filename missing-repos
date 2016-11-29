@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Usage: esv missing-repos [--clone]
+# Summary:
+# Help: Available options
+#
+# --clone:
+#
+
+set -e
+
+# provide sub completions
+if [ "$1" == "--complete" ]; then
+    echo "--clone"
+    exit
+fi
+
+cd $ESV_ROOT
+
+required_repos=$(grep -r project_repo_path: ./ansible/playbooks/dev/* 2>/dev/null | cut -d: -f3 | awk '{ print $1 }' | sort -u)
+# repos=$(ls -d $ESV_ROOT/*/.hg | rev | cut -f2 -d "/" | rev | sort -u)
+repos=$(ls -d ./*/.hg | cut -f2 -d "/" | sort -u)
+
+# filter to entries unique to $required_repos
+missing_repos=($(comm -23 <(echo "$required_repos" ) <(echo "$repos")))
+for i in "${missing_repos[@]}"
+do
+    if [ "$1" = "--clone" ]; then
+        echo "Cloning repo.evoworx.org/$i"
+        echo "======="
+        # hg clone "ssh://www-data@repo.evoworx.org/$i"
+        echo "I would have run:"
+        echo "hg clone ssh://www-data@repo.evoworx.org/${i}"
+    else
+        echo "$i"
+    fi
+done

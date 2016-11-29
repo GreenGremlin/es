@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Usage: esv post [branch|head|local]
+# Summary: Posts a review using 'rbt post'
+# Help: Available options
+#   branch - post a review of all commits to the current branch
+#   head - post a review using a diff between default and current branch head
+#   local - post a review of local, uncommitted changes
+#
+
+set -e
+
+# provide sub completions
+if [ "$1" == "--complete" ]; then
+    echo "branch head local"
+    exit
+fi
+
+if [ ! -e "./.reviewboardrc" ] || [ -z "$(grep ^REPOSITORY ./.reviewboardrc)" ]; then
+    REPOSITORY=${PWD##*/}
+    echo "[warning] no repository found in .reviewboardrc; using folder name '$REPOSITORY' as the repository"
+    options="$options --repository=$REPOSITORY"
+fi
+
+function rbt_post {
+    from_branch="default"
+    to_branch="."
+    if [[ $# -gt 0 && "$1" != -* ]]; then
+        from_branch="$1"
+        shift
+    fi
+    if [[ $# -gt 0 && "$1" != -* ]]; then
+        to_branch="$1"
+        shift
+    fi
+    TO_HASH=$(hg log -r "$to_branch" --template '{node}\n')
+    FROM_HASH=$(hg log -r "$from_branch" --template '{node}\n')
+    TO_REV=$(hg log -r "$to_branch" --template '{rev}\n')
+    FROM_REV=$(hg log -r "$from_branch" --template '{rev}\n')
+    options="$options $@"
+
+    echo "Posting revisions $FROM_REV:$TO_REV (${FROM_HASH:0:12}:${TO_HASH:0:12})"
+    rbt post $options $FROM_HASH $TO_HASH
+}
+
+if [ "$1" == "branch" ]; then
+    rbt_post "parents(min(branch(($(hg branch)))))" . ${@:2}
+
+elif [ "$1" == "head" ]; then
+    rbt_post default . ${@:2}
+
+elif [ "$1" == "local" ]; then
+    hg diff | rbt post --diff-filename=- "${@:2}"
+else
+    options="$options $@"
+    echo "rbt post $options"
+    rbt post $options
+fi

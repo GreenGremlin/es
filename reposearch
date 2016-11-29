@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Usage: esv reposearch
+# Summary:
+# Help: Available options
+#
+
+set -e
+
+# provide sub completions
+if [ "$1" == "--complete" ]; then
+    echo "`ls` what else"
+    exit
+fi
+
+if [[ -z "$1" ]]
+then
+    echo Pass an argument to ag on.
+else
+    echo "ssh -t repo.evoworx.org ag $* /reposearch 2> /dev/null"
+    ssh -t repo.evoworx.org ag $* /reposearch 2> /dev/null
+fi

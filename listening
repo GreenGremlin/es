@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Usage: nem listening [port]
+# Summary: Lists the info for any process listening on the given port
+
+set -e
+
+check_port=8080
+
+if [ -n "$1" ]; then
+    check_port="$1"
+fi
+lsof -n -i4TCP:$check_port | grep LISTEN;

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Usage: {SUB} what
+# Summary: List all {SUB} what, what!!
+# Help: This command is mostly used for testing stuff.
+# 
+# Also, this command helps find commands that are named the
+# same as potentially builtin shell commands (which, cd, etc)
+
+echo "What!"

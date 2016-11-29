@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Usage: esv [site]
+# Summary: Commands for the VM
+# Help: Available options
+#
+# django:
+#
+
+set -e
+
+# provide sub completions
+if [[ "$1" == "--complete" ]]; then
+    if [[ $COMP_CWORD -lt 3 ]]; then
+        echo $($SUB_PATH/esv-sites)
+    fi
+    exit
+fi
+
+[ -z ${ESV_ROOT+x} ] && export ESV_ROOT="$HOME/energysavvy"
+
+if [[ -n "$1" ]]; then
+    if [[ "$(hostname)" = "dev" ]]; then
+        echo "Executing: $SUB_PATH/esv-rs $1"
+        $SUB_PATH/esv-rs "$1"
+    elif [[ -d "$ESV_ROOT/$1" ]]; then
+        echo "Changing directory to: $SUB_PATH/esv-rs $1"
+        cd "$ESV_ROOT/$1"
+    else
+        echo "${SUB_COMMAND_NAME}: unknown command \`$1\`"
+    fi
+fi

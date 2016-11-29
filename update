@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Usage: esv update [build|esv|sites|vm]
+# Summary: Updates esv environment
+# Help: Updatable packages
+#
+# build:
+#   Updates all parts of the build environment.
+#     - downloads the latest ansible changes
+#
+# esv:
+#   Updates just the esv sub-commands
+#
+# sites:
+#   Fetches lates updates for all sites
+#
+# vm:
+#
+
+set -e
+
+# provide sub completions
+if [ "$1" == "--complete" ]; then
+    echo "build esv sites vm"
+    exit
+fi
+
+NL=$'\n'
+
+[ -z ${ESV_ROOT+x} ] && export ESV_ROOT="$HOME/energysavvy"
+
+if [ "$1" == "build" ]; then
+    if [ -d "$ESV_ROOT/ansible" ]; then
+        echo "Fetching Ansible changes"
+        cd "$ESV_ROOT/ansible"
+        hg fetch
+    fi
+
+elif [ "$1" == "esv" ]; then
+    if [ -d "$_SUB_ROOT" ]; then
+        echo "Updating esv sub-commands"
+        cd "$_SUB_ROOT"
+        git -C $_SUB_ROOT stash
+        git -C $_SUB_ROOT pull --rebase
+        git -C $_SUB_ROOT stash pop
+    fi
+
+elif [ -n "$1" ]; then
+    echo "${NL}Invalid package: '$1'"
+
+else
+    echo "${NL}Did you mean?    esv update esv${NL}"
+    # echo "${NL}"
+    # esv update --help
+fi
