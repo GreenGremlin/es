@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Usage: esv clone [repository]
+# Summary: Clones an EnergySavvy into the current directory
+# Help:
+
+set -e
+
+# provide sub completions
+if [ "$1" == "--complete" ]; then
+    echo ""
+    exit
+fi
+
+hg clone ssh://repo.evoworx.org/$1
