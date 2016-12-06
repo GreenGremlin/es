@@ -5,10 +5,22 @@
 
 set -e
 
+ESV_ROOT="$HOME/energysavvy"
+
 # provide sub completions
 if [ "$1" == "--complete" ]; then
-    echo ""
+    remote_repos=$(es cacheme 3600 ssh repo.evoworx.org 'ls' | sort -u)
+    # local_repos=$(ls -d $ESV_ROOT/*/.hg | cut -f2 -d "/" | sort -u)
+    # Why doesn't the above work?
+    local_repos=$(cd $ESV_ROOT && ls -d ./*/.hg | cut -f2 -d "/" | sort -u)
+    remote_only_repos=$(comm -23 <(echo "$remote_repos" ) <(echo "$local_repos"))
+    echo $remote_only_repos
     exit
 fi
 
-hg clone ssh://repo.evoworx.org/$1
+if [ -e "$ESV_ROOT/$1" ]; then
+    echo "Directory already exists: $ESV_ROOT/$1"
+    exit 1
+fi
+
+hg clone "ssh://repo.evoworx.org/$1" "$ESV_ROOT/$1"
