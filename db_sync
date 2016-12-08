@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Usage: nem listening [port]
-# Summary: Lists the info for any process listening on the given port
+# Summary: Fetches a db dump from beta for the current site and
+# restores it locally
+# Help: Run's the following commands
+#     fab beta dump_db:download
+#     fab dev restore_db_to_dev
 
 set -e
 
