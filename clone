@@ -9,7 +9,7 @@ ESV_ROOT="$HOME/energysavvy"
 
 # provide sub completions
 if [ "$1" == "--complete" ]; then
-    remote_repos=$(es cacheme 3600 ssh repo.evoworx.org 'ls' | sort -u)
+    remote_repos=$(es cacheme 3600 ssh repo.evoworx.org 'ls /reposearch' | sort -u)
     # local_repos=$(ls -d $ESV_ROOT/*/.hg | cut -f2 -d "/" | sort -u)
     # Why doesn't the above work?
     local_repos=$(cd $ESV_ROOT && ls -d ./*/.hg | cut -f2 -d "/" | sort -u)
